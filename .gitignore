@@ -2,6 +2,7 @@
 #
 .DS_Store
 .env
+public/uploads/
 # Xcode
 #
 build/
