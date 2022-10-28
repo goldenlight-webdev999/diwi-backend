@@ -7,7 +7,7 @@ class Look {
     this.location = look.location;
     this.date = look.date;
     this.friends = look.friends;
-    this.note = look.location;
+    this.note = look.note;
     this.media = look.media;
   }
   static create(newLook, result) {

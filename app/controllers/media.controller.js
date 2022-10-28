@@ -51,28 +51,69 @@ exports.create = async (req, res) => {
 };
 
 // Retrieve all Medias from the database (with condition).
-exports.findAll = (req, res) => {
-	const name = req.query.name;
+exports.findAllMedia = () => {
+  return new Promise((resolve, reject) => {
+    Media.getAll('', (err, data) => {
+      if (err)
+        reject({err})
+      else {
+        resolve({data})
+      }
+    });
 
-  Media.getAll(name, (err, data) => {
-    if (err)
-      res.status(500).send({
-				error: true,
-        message:
-          err.message || "Some error occurred while retrieving medias."
-      });
-    else res.send({
-			success: true,
-			data
-		});
   });
+  
+};
+
+exports.findAll = async (req, res) => {
+  try {
+    const response = await this.findAllMedia()
+    const {data, err } = response
+
+    if (data) {
+      res.send({
+        success: true,
+        data
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: err
+    });
+  }
+	
 };
 
 // Find a single Media with a id
-exports.findOne = (req, res) => {
-	Media.findById(req.params.id, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
+exports.findOneMedia = (id) => {
+
+  return new Promise((resolve, reject) => {
+    Media.findById(id, (err, data) => {
+      if (err)
+        reject({err})
+      else {
+        resolve({data})
+      }
+    });
+
+  });
+  
+};
+exports.findOne = async(req, res) => {
+  try {
+    const response = await this.findOneMedia(req.params.id)
+    const {data, err } = response
+
+    if (data) {
+      res.send({
+        success: true,
+        data
+      });
+    }
+  } catch (err) {
+    if (err.err) {
+      if (err.err.kind === "not_found") {
         res.status(404).send({
 					error: true,
           message: `Not found Media with id ${req.params.id}.`
@@ -87,7 +128,7 @@ exports.findOne = (req, res) => {
 			success: true,
 			data
 		});
-  });
+  }	
 };
 
 // Update a Media identified by the id in the request

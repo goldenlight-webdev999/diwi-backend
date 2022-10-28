@@ -31,43 +31,82 @@ exports.create = (req, res) => {
 };
 
 // Retrieve all Friends from the database (with condition).
-exports.findAll = (req, res) => {
-	const name = req.query.name;
+exports.findAllFriend = () => {
+  return new Promise((resolve, reject) => {
+    Friend.getAll('', (err, data) => {
+      if (err)
+        reject({err})
+      else {
+        resolve({data})
+      }
+    });
 
-  Friend.getAll(name, (err, data) => {
-    if (err)
-      res.status(500).send({
-				error: true,
-        message:
-          err.message || "Some error occurred while retrieving friends."
-      });
-    else res.send({
-			success: true,
-			data
-		});
   });
+  
+};
+
+exports.findAll = async(req, res) => {
+	try {
+    const response = await this.findAllFriend()
+    const {data, err } = response
+
+    if (data) {
+      res.send({
+        success: true,
+        data
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: err
+    });
+  }
 };
 
 // Find a single Friend with a id
-exports.findOne = (req, res) => {
-	Friend.findById(req.params.id, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
+exports.findOneFriend = (id) => {
+  return new Promise((resolve, reject) => {
+    Friend.findById(id, (err, data) => {
+      if (err)
+        reject({err})
+      else {
+        resolve({data})
+      }
+    });
+
+  });
+  
+};
+exports.findOne = async (req, res) => {
+	try {
+    const response = await this.findOneFriend(req.params.id)
+    const {data, err } = response
+
+    if (data) {
+      res.send({
+        success: true,
+        data
+      });
+    }
+  } catch (err) {
+    if (err.err) {
+      if (err.err.kind === "not_found") {
         res.status(404).send({
 					error: true,
-          message: `Not found Friend with id ${req.params.id}.`
+          message: `Not found Media with id ${req.params.id}.`
         });
       } else {
         res.status(500).send({
 					error: true,
-          message: "Error retrieving Friend with id " + req.params.id
+          message: "Error retrieving Media with id " + req.params.id
         });
       }
     } else res.send({
 			success: true,
 			data
 		});
-  });
+  }
 };
 
 // Update a Friend identified by the id in the request

@@ -1,6 +1,9 @@
 const Look = require("../models/look.model.js");
 const Friend = require("../models/friend.model.js");
 const Media = require("../models/media.model.js");
+const { findOneMedia } = require("./media.controller.js");
+const { findOneFriend } = require("./friend.controller.js");
+
 
 // Create and Save a new Look
 exports.create = async (req, res) => {
@@ -86,46 +89,154 @@ exports.create = async (req, res) => {
   });
 };
 
-// Retrieve all Looks from the database (with condition).
-exports.findAll = (req, res) => {
-	const title = req.query.title;
-  const location = req.query.location;
-  const note = req.query.note;
+exports.getFriendsByIds = async (ids) => {
+  let friendsData = []
+  let index = 0
+  
+  while (index < ids.length) {
+    try {
+      const friendResponse = await findOneFriend(ids[index])
+      
+      const friendData = {
+        id: friendResponse.data.id,
+        name: friendResponse.data.name,
+      }
+      
+      friendsData = [...friendsData, friendData]
+      
+    } catch (error) {
+      console.log(error)
+    }
+    index++
+  }
 
-  Look.getAll(title, location, note, (err, data) => {
-    if (err)
-      res.status(500).send({
-				error: true,
-        message:
-          err.message || "Some error occurred while retrieving looks."
-      });
-    else res.send({
-			success: true,
-			data
-		});
+  return friendsData  
+}
+
+exports.getMediaById = async (mediaId) => {
+  let mediaData = {
+    id: mediaId,
+    type: 'photo',
+    src: '',
+  }
+
+  try {
+    const mediaResponse = await findOneMedia(mediaId)
+    mediaData = {
+      id: mediaResponse.data.id,
+      type: mediaResponse.data.type,
+      src: process.env.CONTENT_URL + mediaResponse.data.src,
+    }
+  } catch (error) {
+    console.log(error)
+  }
+
+  return mediaData
+}
+
+// Retrieve all Looks from the database (with condition).
+exports.findAllLook = () => {  
+  return new Promise((resolve, reject) => {
+    Look.getAll('', '', '', (err, data) => {
+      if (err)
+        reject({err})
+      else {
+        resolve({data})
+      }
+    });
+
   });
 };
 
-// Find a single Look with a id
-exports.findOne = (req, res) => {
-	Look.findById(req.params.id, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-					error: true,
-          message: `Not found Look with id ${req.params.id}.`
-        });
-      } else {
-        res.status(500).send({
-					error: true,
-          message: "Error retrieving Look with id " + req.params.id
-        });
+exports.findAll = async(req, res) => {
+  try {
+    const response = await this.findAllLook()
+    const {data, err } = response
+
+    const resultData = data
+
+    if (resultData && resultData.length > 0) {
+      let index = 0
+      while (index < resultData.length) {
+        let lookData = resultData[index]
+
+        const mediaId = lookData.media        
+        const mediaData = await this.getMediaById(mediaId)
+
+        // friends update
+        const friendIds = JSON.parse(lookData.friends)    
+        const friendsData = await this.getFriendsByIds(friendIds)
+
+        resultData[index].media = mediaData
+        resultData[index].friends = friendsData
+
+        index++
       }
-    } else res.send({
-			success: true,
-			data
-		});
+    }
+
+    res.send({
+      success: true,
+      data: resultData
+    });
+  } catch (error) {
+    res.status(500).send({
+      error: true,
+      message: error
+    });
+  }
+};
+
+// Find a single Look with a id
+exports.findOneLook = (id) => {  
+  return new Promise((resolve, reject) => {
+    Look.findById(id, (err, data) => {
+      if (err)
+        reject({err})
+      else {
+        resolve({data})
+      }
+    });
+
   });
+};
+
+exports.findOne = async (req, res) => {
+  try {
+    const response = await this.findOneLook(req.params.id)
+    const {data} = response
+
+    // media update
+    const mediaId = data.media
+    const mediaData = await this.getMediaById(mediaId)
+
+    // friends update
+    const friendIds = JSON.parse(data.friends)    
+    const friendsData = await this.getFriendsByIds(friendIds)
+
+    if (data) {
+      let resultData = data
+      resultData.media = mediaData
+      resultData.friends = friendsData
+      res.send({
+        success: true,
+        data: resultData
+      });
+    }
+    
+  } catch (error) {
+    if ( error.err && error.err.kind && error.err.kind == "not_found") {
+      res.status(404).send({
+        error: true,
+        message: `Not found Look with id ${req.params.id}.`
+      });
+    } else {
+      res.status(500).send({
+        error: true,
+        message: "Error retrieving Look with id " + req.params.id
+      });
+    }
+  }  
+	
 };
 
 // Update a Look identified by the id in the request
@@ -140,8 +251,8 @@ exports.update = (req, res) => {
 
   /**
    * Before update, check if all of the friend ids in request exist in friends table.
-   */
-   const reqFriends = JSON.parse(req.body.friends);  
+   */   
+   const reqFriends = JSON.parse(req.body.friends);
    let errorMessage = '';
    Friend.getAll('', (err, data) => {
     if (err)
