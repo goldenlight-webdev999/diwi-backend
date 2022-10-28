@@ -1,4 +1,5 @@
 const Friend = require("../models/friend.model.js");
+const Look = require("../models/look.model.js");
 
 // Create and Save a new Friend
 exports.create = (req, res) => {
@@ -145,9 +146,62 @@ exports.update = (req, res) => {
   );
 };
 
+exports.findLooksByFriendId = (id) => {  
+  return new Promise((resolve, reject) => {
+    Look.getAllByFriendId(id, (err, data) => {
+      if (err)
+        reject({err})
+      else {
+        resolve({data})
+      }
+    });
+
+  });
+};
+
+exports.updateLookById = (id) => {  
+  return new Promise((resolve, reject) => {
+    Look.updateById(id, (err, data) => {
+      if (err)
+        reject({err})
+      else {
+        resolve({data})
+      }
+    });
+
+  });
+};
+
+exports.deleteFriendByIdFromLooks = async(friendId) => {
+  const response = await this.findLooksByFriendId(friendId)
+  const looks = response.data
+  
+  if (looks && looks.length>0) {
+    looks.forEach(look => {
+      let newLook = look
+      let friendIds = JSON.parse(newLook.friends)
+      const newFriendIds = (friendIds && friendIds.length>0) ? friendIds.filter(id=> id.toString() !== friendId) : []
+      const updatedFriendIds = JSON.stringify(newFriendIds)
+      newLook.friends = updatedFriendIds
+      
+      Look.updateById(look.id, newLook, (err, data) => {
+        if (err) {
+          if (err.kind === "not_found") {
+            console.log(`Not found Look with id ${look.id}.`)
+          } else {
+            console.log(`Error updating Look with id ${look.id}`)
+          }
+        } else {
+          //
+        }
+      });
+    });
+  }
+}
+
 // Delete a Friend with the specified id in the request
-exports.delete = (req, res) => {
-	Friend.remove(req.params.id, (err, data) => {
+exports.delete = async(req, res) => {  
+	Friend.remove(req.params.id, async(err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -160,10 +214,13 @@ exports.delete = (req, res) => {
           message: "Could not delete Friend with id " + req.params.id
         });
       }
-    } else res.send({ 
-			success: true,
-			message: `Friend was deleted successfully!`
-		});
+    } else {
+      await this.deleteFriendByIdFromLooks(req.params.id)
+      res.send({ 
+        success: true,
+        message: `Friend was deleted successfully!`
+      });
+    } 
   });
 };
 

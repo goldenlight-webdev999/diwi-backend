@@ -110,6 +110,25 @@ class Look {
       result(null, res);
     });
   }
+
+  static getAllByFriendId(friendId, result) {
+    let query = "SELECT * FROM looks";
+
+    if (friendId) {
+      query += ` WHERE friends like '%,${friendId},%' OR friends like '%,${friendId}]%' OR friends like '%[${friendId},%' OR friends like '%[${friendId}]%'`;
+    }
+
+    sql.query(query, (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+
+      console.log("looks: ", res);
+      result(null, res);
+    });
+  }
 }
 
 
