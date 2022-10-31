@@ -165,11 +165,17 @@ exports.findAll = async(req, res) => {
       while (index < resultData.length) {
         let lookData = resultData[index]
 
-        const mediaId = lookData.media        
-        const mediaData = await this.getMediaById(mediaId)
-        
-        const friendIds = JSON.parse(lookData.friends)    
-        const friendsData = await this.getFriendsByIds(friendIds)
+        const mediaId = lookData.media
+        let mediaData = {}
+        if (mediaId) {
+          mediaData = await this.getMediaById(mediaId)
+        }
+
+        const friendIds = JSON.parse(lookData.friends)
+        let friendsData = []
+        if (friendIds && friendIds.length > 0) {
+          friendsData = await this.getFriendsByIds(friendIds)
+        }
 
         resultData[index].media = mediaData
         resultData[index].friends = friendsData
@@ -211,11 +217,17 @@ exports.findOne = async (req, res) => {
 
     // media update
     const mediaId = data.media
-    const mediaData = await this.getMediaById(mediaId)
+    let mediaData = {}
+    if (mediaId) {
+      mediaData = await this.getMediaById(mediaId)
+    }    
 
     // friends update
-    const friendIds = JSON.parse(data.friends)    
-    const friendsData = await this.getFriendsByIds(friendIds)
+    const friendIds = JSON.parse(data.friends)
+    let friendsData = []
+    if (friendIds && friendIds.length > 0) {
+      friendsData = await this.getFriendsByIds(friendIds)
+    }
 
     if (data) {
       let resultData = data

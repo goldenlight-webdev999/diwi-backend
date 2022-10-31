@@ -42,6 +42,7 @@ exports.create = async (req, res) => {
       });
     });
   } catch (e) {
+    console.log('e.message', e.message)
     res.status(422).send({ 
       error: true,
       message: e.message
