@@ -28,7 +28,8 @@ exports.create = async (req, res) => {
   /**
    * Before save, check if all of the friend ids in request exist in friends table.
    */
-  const reqFriends = JSON.parse(req.body.friends);  
+  
+  const reqFriends = JSON.parse(req.body.friends);
   let friendsErrorMessage = '';
   Friend.getAll('', (err, data) => {
     if (err) {
@@ -77,10 +78,14 @@ exports.create = async (req, res) => {
                 message:
                   err.message || "Some error occurred while creating the Look."
               });
-            else res.send({
-              success: true,
-              data
-            });
+            else {              
+              const newReq = {
+                params: {
+                  id: data.id
+                }
+              }
+              this.findOne(newReq, res)
+            }
           });
         }
       });
@@ -162,8 +167,7 @@ exports.findAll = async(req, res) => {
 
         const mediaId = lookData.media        
         const mediaData = await this.getMediaById(mediaId)
-
-        // friends update
+        
         const friendIds = JSON.parse(lookData.friends)    
         const friendsData = await this.getFriendsByIds(friendIds)
 
@@ -282,42 +286,68 @@ exports.update = (req, res) => {
        */
       const mediaId = req.body.media;
       let mediaErrorMessage = '';
-      Media.findById(mediaId, (err, data) => {
-        if (err) {
-          mediaErrorMessage = err.message || `Some error occurred while retrieving Media by ${mediaId}.`
-        }    
-        
-        if (mediaErrorMessage) {
-          res.status(500).send({
-            error: true,
-            message: mediaErrorMessage
-          });
-        } else {
-          // Update Look in the database
-          Look.updateById(
-            req.params.id,
-            new Look(req.body),
-            (err, data) => {
-              if (err) {
-                if (err.kind === "not_found") {
-                  res.status(404).send({
-                    error: true,
-                    message: `Not found Look with id ${req.params.id}.`
-                  });
-                } else {
-                  res.status(500).send({
-                    error: true,
-                    message: "Error updating Look with id " + req.params.id
-                  });
-                }
-              } else res.send({
-                success: true,
-                data
-              });
-            }
-          );
-        }
-      });
+      if (!mediaId) {
+        // Update Look in the database
+        Look.updateById(
+          req.params.id,
+          new Look(req.body),
+          (err, data) => {
+            if (err) {
+              if (err.kind === "not_found") {
+                res.status(404).send({
+                  error: true,
+                  message: `Not found Look with id ${req.params.id}.`
+                });
+              } else {
+                res.status(500).send({
+                  error: true,
+                  message: "Error updating Look with id " + req.params.id
+                });
+              }
+            } else res.send({
+              success: true,
+              data
+            });
+          }
+        );
+      } else {
+        Media.findById(mediaId, (err, data) => {
+          if (err) {
+            mediaErrorMessage = err.message || `Some error occurred while retrieving Media by ${mediaId}.`
+          }    
+          
+          if (mediaErrorMessage) {
+            res.status(500).send({
+              error: true,
+              message: mediaErrorMessage
+            });
+          } else {
+            // Update Look in the database
+            Look.updateById(
+              req.params.id,
+              new Look(req.body),
+              (err, data) => {
+                if (err) {
+                  if (err.kind === "not_found") {
+                    res.status(404).send({
+                      error: true,
+                      message: `Not found Look with id ${req.params.id}.`
+                    });
+                  } else {
+                    res.status(500).send({
+                      error: true,
+                      message: "Error updating Look with id " + req.params.id
+                    });
+                  }
+                } else res.send({
+                  success: true,
+                  data
+                });
+              }
+            );
+          }
+        });
+      }
       
     }
   });
