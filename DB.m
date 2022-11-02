@@ -4,6 +4,7 @@ DB
 CREATE TABLE IF NOT EXISTS `friends` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
+  `user_id` varchar(255) NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -12,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `friends` (
 CREATE TABLE IF NOT EXISTS `medias` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
+  `user_id` varchar(255) NOT NULL,
   `type` varchar(8) NOT NULL,
   `src` varchar(1024) NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
@@ -24,10 +26,19 @@ CREATE TABLE IF NOT EXISTS `looks` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `location` varchar(1024) NOT NULL,
-  `date` DATE NOT NULL,
+  `user_id` varchar(255) NOT NULL,
+  `date` DATE,
   `friends` JSON,
   `note` text,
   `media` varchar(225),
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+``users table``
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `user_id` varchar(255) NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

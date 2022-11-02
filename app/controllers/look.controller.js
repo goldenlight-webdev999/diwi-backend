@@ -18,6 +18,7 @@ exports.create = async (req, res) => {
   // Create a Look
   const look = new Look({
     title: req.body.title,
+    user_id: req.body.user_id,
     location: req.body.location,
     date: req.body.date,
     friends: req.body.friends,
@@ -140,9 +141,9 @@ exports.getMediaById = async (mediaId) => {
 }
 
 // Retrieve all Looks from the database (with condition).
-exports.findAllLook = () => {  
+exports.findAllLook = (user_id) => {  
   return new Promise((resolve, reject) => {
-    Look.getAll('', '', '', (err, data) => {
+    Look.getAll(user_id, (err, data) => {
       if (err)
         reject({err})
       else {
@@ -154,8 +155,9 @@ exports.findAllLook = () => {
 };
 
 exports.findAll = async(req, res) => {
+  const user_id = req.params.user_id
   try {
-    const response = await this.findAllLook()
+    const response = await this.findAllLook(user_id)
     const {data, err } = response
 
     const resultData = data

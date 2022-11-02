@@ -14,6 +14,7 @@ exports.create = (req, res) => {
   // Create a Friend
   const friend = new Friend({
     name: req.body.name,
+    user_id: req.body.user_id,
   });
 
   // Save Friend in the database
@@ -32,9 +33,9 @@ exports.create = (req, res) => {
 };
 
 // Retrieve all Friends from the database (with condition).
-exports.findAllFriend = () => {
+exports.findAllFriend = (user_id) => {
   return new Promise((resolve, reject) => {
-    Friend.getAll('', (err, data) => {
+    Friend.getAll(user_id, (err, data) => {
       if (err)
         reject({err})
       else {
@@ -47,8 +48,9 @@ exports.findAllFriend = () => {
 };
 
 exports.findAll = async(req, res) => {
+  const user_id = req.params.user_id
 	try {
-    const response = await this.findAllFriend()
+    const response = await this.findAllFriend(user_id)
     const {data, err } = response
 
     if (data) {

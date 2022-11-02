@@ -30,6 +30,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.get("/", (req, res) => {
   res.json({ message: "Here goes the apis for DIWI app." });
 });
+require("./app/routes/user.routes.js")(app);
 require("./app/routes/friend.routes.js")(app);
 require("./app/routes/look.routes.js")(app);
 require("./app/routes/media.routes.js")(app);

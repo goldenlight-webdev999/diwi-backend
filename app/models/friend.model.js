@@ -4,6 +4,7 @@ const sql = require("./db.js");
 class Friend {
   constructor(friend) {
     this.name = friend.name;
+    this.user_id = friend.user_id;
     this.created_at = friend.created_at;
   }
   static create(newFriend, result) {
@@ -36,11 +37,11 @@ class Friend {
       result({ kind: "not_found" }, null);
     });
   }
-  static getAll(name, result) {
+  static getAll(user_id, result) {
     let query = "SELECT * FROM friends";
 
-    if (name) {
-      query += ` WHERE name LIKE '%${name}%'`;
+    if (user_id) {
+      query += ` WHERE user_id LIKE '%${user_id}%'`;
     }
 
     sql.query(query, (err, res) => {
@@ -56,8 +57,8 @@ class Friend {
   }
   static updateById(id, friend, result) {
     sql.query(
-      "UPDATE friends SET name = ?, created_at = ? WHERE id = ?",
-      [friend.name, friend.created_at, id],
+      "UPDATE friends SET name = ?, user_id = ?, created_at = ? WHERE id = ?",
+      [friend.name, user_id, friend.created_at, id],
       (err, res) => {
         if (err) {
           console.log("error: ", err);

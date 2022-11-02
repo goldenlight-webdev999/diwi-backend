@@ -40,11 +40,11 @@ class Look {
       result({ kind: "not_found" }, null);
     });
   }
-  static getAll(title, location, note, result) {
+  static getAll(user_id, result) {
     let query = "SELECT * FROM looks";
 
-    if (title) {
-      query += ` WHERE title LIKE '%${title}%' OR location LIKE '%${location}%' OR note LIKE '%${note}%'`;
+    if (user_id) {
+      query += ` WHERE user_id LIKE '%${user_id}%'`;
     }
 
     sql.query(query, (err, res) => {

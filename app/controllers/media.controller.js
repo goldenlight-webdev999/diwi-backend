@@ -25,6 +25,7 @@ exports.create = async (req, res) => {
     const file_path = path.basename(uploadedFile.path)
     const media = new Media({
       name: body.name,
+      user_id: req.body.user_id,
       type: body.type,
       src: file_path,
     });
@@ -52,9 +53,9 @@ exports.create = async (req, res) => {
 };
 
 // Retrieve all Medias from the database (with condition).
-exports.findAllMedia = () => {
+exports.findAllMedia = (user_id) => {
   return new Promise((resolve, reject) => {
-    Media.getAll('', (err, data) => {
+    Media.getAll(user_id, (err, data) => {
       if (err)
         reject({err})
       else {
@@ -67,8 +68,9 @@ exports.findAllMedia = () => {
 };
 
 exports.findAll = async (req, res) => {
+  const user_id = req.params.user_id
   try {
-    const response = await this.findAllMedia()
+    const response = await this.findAllMedia(user_id)
     const {data, err } = response
 
     if (data) {
