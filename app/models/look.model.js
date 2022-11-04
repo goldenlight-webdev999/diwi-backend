@@ -9,6 +9,7 @@ class Look {
     this.friends = look.friends;
     this.note = look.note;
     this.media = look.media;
+    this.user_id = look.user_id;
   }
   static create(newLook, result) {
     sql.query("INSERT INTO looks SET ?", newLook, (err, res) => {

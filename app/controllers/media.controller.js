@@ -25,7 +25,7 @@ exports.create = async (req, res) => {
     const file_path = path.basename(uploadedFile.path)
     const media = new Media({
       name: body.name,
-      user_id: req.body.user_id,
+      user_id: body.user_id,
       type: body.type,
       src: file_path,
     });
@@ -68,7 +68,7 @@ exports.findAllMedia = (user_id) => {
 };
 
 exports.findAll = async (req, res) => {
-  const user_id = req.params.user_id
+  const user_id = req.query.user_id
   try {
     const response = await this.findAllMedia(user_id)
     const {data, err } = response

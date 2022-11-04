@@ -155,7 +155,7 @@ exports.findAllLook = (user_id) => {
 };
 
 exports.findAll = async(req, res) => {
-  const user_id = req.params.user_id
+  const user_id = req.query.user_id
   try {
     const response = await this.findAllLook(user_id)
     const {data, err } = response

@@ -5,6 +5,7 @@ class Media {
   constructor(media) {
     this.name = media.name;
     this.type = media.type;
+    this.user_id = media.user_id;
     this.src = media.src;
   }
   static create(newMedia, result) {
