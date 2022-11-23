@@ -16,7 +16,7 @@ class Media {
         return;
       }
 
-      console.log("created media: ", { id: res.insertId, ...newMedia });
+      //console.log("created media: ", { id: res.insertId, ...newMedia });
       result(null, { id: res.insertId, ...newMedia });
     });
   }
@@ -29,7 +29,7 @@ class Media {
       }
 
       if (res.length) {
-        console.log("found media: ", res[0]);
+        //console.log("found media: ", res[0]);
         result(null, res[0]);
         return;
       }
@@ -52,7 +52,7 @@ class Media {
         return;
       }
 
-      console.log("medias: ", res);
+      //console.log("medias: ", res);
       result(null, res);
     });
   }
@@ -73,7 +73,7 @@ class Media {
           return;
         }
 
-        console.log("updated media: ", { id: id, ...media });
+        //console.log("updated media: ", { id: id, ...media });
         result(null, { id: id, ...media });
       }
     );
@@ -92,7 +92,7 @@ class Media {
         return;
       }
 
-      console.log("deleted media with id: ", id);
+      //console.log("deleted media with id: ", id);
       result(null, res);
     });
   }

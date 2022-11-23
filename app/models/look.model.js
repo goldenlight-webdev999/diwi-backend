@@ -19,7 +19,7 @@ class Look {
         return;
       }
 
-      console.log("created look: ", { id: res.insertId, ...newLook });
+      //console.log("created look: ", { id: res.insertId, ...newLook });
       result(null, { id: res.insertId, ...newLook });
     });
   }
@@ -32,7 +32,7 @@ class Look {
       }
 
       if (res.length) {
-        console.log("found look: ", res[0]);
+        //console.log("found look: ", res[0]);
         result(null, res[0]);
         return;
       }
@@ -55,7 +55,7 @@ class Look {
         return;
       }
 
-      console.log("looks: ", res);
+      //console.log("looks: ", res);
       result(null, res);
     });
   }
@@ -76,7 +76,7 @@ class Look {
           return;
         }
 
-        console.log("updated look: ", { id: id, ...look });
+        //console.log("updated look: ", { id: id, ...look });
         result(null, { id: id, ...look });
       }
     );
@@ -95,7 +95,7 @@ class Look {
         return;
       }
 
-      console.log("deleted look with id: ", id);
+      //console.log("deleted look with id: ", id);
       result(null, res);
     });
   }
@@ -107,7 +107,7 @@ class Look {
         return;
       }
 
-      console.log(`deleted ${res.affectedRows} looks`);
+      //console.log(`deleted ${res.affectedRows} looks`);
       result(null, res);
     });
   }
@@ -126,7 +126,7 @@ class Look {
         return;
       }
 
-      console.log("looks: ", res);
+      //console.log("looks: ", res);
       result(null, res);
     });
   }

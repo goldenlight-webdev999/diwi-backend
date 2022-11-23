@@ -15,7 +15,7 @@ class Friend {
         return;
       }
 
-      console.log("created friend: ", { id: res.insertId, ...newFriend });
+      //console.log("created friend: ", { id: res.insertId, ...newFriend });
       result(null, { id: res.insertId, ...newFriend });
     });
   }
@@ -28,7 +28,7 @@ class Friend {
       }
 
       if (res.length) {
-        console.log("found friend: ", res[0]);
+        //console.log("found friend: ", res[0]);
         result(null, res[0]);
         return;
       }
@@ -51,7 +51,7 @@ class Friend {
         return;
       }
 
-      console.log("friends: ", res);
+      //console.log("friends: ", res);
       result(null, res);
     });
   }
@@ -72,7 +72,7 @@ class Friend {
           return;
         }
 
-        console.log("updated friend: ", { id: id, ...friend });
+        //console.log("updated friend: ", { id: id, ...friend });
         result(null, { id: id, ...friend });
       }
     );
@@ -91,7 +91,7 @@ class Friend {
         return;
       }
 
-      console.log("deleted friend with id: ", id);
+      //console.log("deleted friend with id: ", id);
       result(null, res);
     });
   }
@@ -103,7 +103,7 @@ class Friend {
         return;
       }
 
-      console.log(`deleted ${res.affectedRows} friends`);
+      //console.log(`deleted ${res.affectedRows} friends`);
       result(null, res);
     });
   }
