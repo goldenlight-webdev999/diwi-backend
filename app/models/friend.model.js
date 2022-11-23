@@ -41,7 +41,7 @@ class Friend {
     let query = "SELECT * FROM friends";
 
     if (user_id) {
-      query += ` WHERE user_id LIKE '%${user_id}%'`;
+      query += ` WHERE user_id = '${user_id}'`;
     }
 
     sql.query(query, (err, res) => {

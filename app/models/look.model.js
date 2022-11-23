@@ -45,7 +45,7 @@ class Look {
     let query = "SELECT * FROM looks";
 
     if (user_id) {
-      query += ` WHERE user_id LIKE '%${user_id}%'`;
+      query += ` WHERE user_id = '${user_id}'`;
     }
 
     sql.query(query, (err, res) => {
