@@ -122,7 +122,7 @@ exports.update = (req, res) => {
     });
   }
 
-  console.log(req.body);
+  //console.log(req.body);
 
   Friend.updateById(
     req.params.id,
